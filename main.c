@@ -29,24 +29,6 @@ void init()
     uart_driver_install(UART_NUM_1, SERIAL_SIZE_RX, 0, 0, NULL, 0);
 }
 
-int sendData(const char* logName, const char* data)
-{
-    const int len = strlen(data);
-    const int txBytes = uart_write_bytes(UART_NUM_1, data, len);
-    ESP_LOGI(logName, "Wrote %d bytes", txBytes);
-    return txBytes;
-}
-
-static void tx_task()
-{
-    static const char *TX_TASK_TAG = "TX_TASK";
-    while (1) {
-        sendData(TX_TASK_TAG, "ATZ10");
-        vTaskDelay(2000 / portTICK_PERIOD_MS);
-        rx_task();
-    }
-}
-
 static void rx_task()
 {
     static const char *RX_TASK_TAG = "RX_TASK";
@@ -67,7 +49,5 @@ void app_main(void)
 {
     init();
     printf("\n Start testing");
-    // rx_task();
-    tx_task();
-    // xTaskCreate(rx_task, "uart_rx_task", 1024*2, NULL, configMAX_PRIORITIES, NULL);
+    rx_task();
 }
